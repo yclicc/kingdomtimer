@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KingdomTimer - Pomodoro Timer</title>
+    <meta name="description" content="A Pomodoro timer for workers in the kingdom">
+    <meta name="theme-color" content="#667eea">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>👑 KingdomTimer</h1>
+            <p>A Pomodoro timer for workers in the kingdom</p>
+        </header>
+
+        <main>
+            <div class="timer-display">
+                <div class="session-info">
+                    <span id="session-type">Work Session</span>
+                    <span id="session-count">1 of 4</span>
+                </div>
+                <div class="time-display" id="time-display">25:00</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="play-pause-btn" class="btn btn-primary">Start</button>
+                <button id="skip-btn" class="btn btn-secondary">Skip</button>
+                <button id="settings-btn" class="btn btn-secondary">Settings</button>
+                <button id="history-btn" class="btn btn-secondary">History</button>
+            </div>
+
+            <div id="prayer-section" class="prayer-section hidden">
+                <h3>Prayer for This Session</h3>
+                <textarea id="prayer-input" placeholder="Write a prayer about what you hope to accomplish in this work session..."></textarea>
+                <button id="start-session-btn" class="btn btn-primary">Begin Work Session</button>
+            </div>
+
+            <div id="reflection-section" class="reflection-section hidden">
+                <h3>Session Reflection</h3>
+                <div class="reflection-content">
+                    <h4>Your Prayer:</h4>
+                    <div id="prayer-display" class="prayer-display"></div>
+                    <h4>How was this prayer answered?</h4>
+                    <textarea id="reflection-input" placeholder="Reflect on how your prayer was answered and how well you focused..."></textarea>
+                </div>
+                <button id="save-reflection-btn" class="btn btn-primary">Save & Continue</button>
+            </div>
+
+            <div id="settings-panel" class="settings-panel hidden">
+                <h3>Timer Settings</h3>
+                <div class="setting-group">
+                    <label>Work Duration (minutes):</label>
+                    <input type="number" id="work-duration" min="1" max="60" value="25">
+                </div>
+                <div class="setting-group">
+                    <label>Short Break (minutes):</label>
+                    <input type="number" id="short-break" min="1" max="30" value="5">
+                </div>
+                <div class="setting-group">
+                    <label>Long Break (minutes):</label>
+                    <input type="number" id="long-break" min="1" max="60" value="10">
+                </div>
+                <div class="setting-group">
+                    <label>Work Sessions per Cycle:</label>
+                    <input type="number" id="sessions-per-cycle" min="1" max="8" value="4">
+                </div>
+                <div class="settings-actions">
+                    <button id="save-settings-btn" class="btn btn-primary">Save Settings</button>
+                    <button id="cancel-settings-btn" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+
+            <div id="history-panel" class="history-panel hidden">
+                <h3>Prayer Session History</h3>
+                <div class="history-controls">
+                    <button id="clear-history-btn" class="btn btn-secondary">Clear History</button>
+                    <button id="close-history-btn" class="btn btn-secondary">Close</button>
+                </div>
+                <div id="history-content" class="history-content">
+                    <div class="history-empty">
+                        <p>No prayer sessions yet. Start your first session to see history here.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-actions">
+                <button id="export-btn" class="btn btn-secondary">Export Data</button>
+                <button id="import-btn" class="btn btn-secondary">Import Data</button>
+                <input type="file" id="import-file" accept=".json" style="display: none;">
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
