@@ -15,7 +15,9 @@ class KingdomTimer {
             timeLeft: this.settings.workDuration * 60,
             totalTime: this.settings.workDuration * 60,
             currentPrayer: '',
-            reflectionHistory: []
+            reflectionHistory: [],
+            startTime: null,
+            endTime: null
         };
         
         this.interval = null;
@@ -27,6 +29,7 @@ class KingdomTimer {
         this.initializeOPFS();
         this.initializeAudio();
         this.updateDisplay();
+        this.setStaticFavicon();
         this.bindEvents();
     }
     
@@ -180,20 +183,36 @@ class KingdomTimer {
         this.state.isRunning = true;
         this.elements.playPauseBtn.textContent = 'Pause';
         
+        // Set start time and end time for time-based calculation
+        const now = Date.now();
+        this.state.startTime = now;
+        this.state.endTime = now + (this.state.timeLeft * 1000);
+        
         this.interval = setInterval(() => {
-            this.state.timeLeft--;
-            this.updateDisplay();
-            
-            if (this.state.timeLeft <= 0) {
-                this.completeSession();
-            }
-        }, 1000);
+            this.updateTimerFromTimeStamp();
+        }, 100);
     }
     
     pauseTimer() {
         this.state.isRunning = false;
         this.elements.playPauseBtn.textContent = 'Resume';
         clearInterval(this.interval);
+        
+        // Update timeLeft to current remaining time when pausing
+        const now = Date.now();
+        this.state.timeLeft = Math.max(0, Math.ceil((this.state.endTime - now) / 1000));
+    }
+    
+    updateTimerFromTimeStamp() {
+        const now = Date.now();
+        const timeLeft = Math.max(0, Math.ceil((this.state.endTime - now) / 1000));
+        
+        this.state.timeLeft = timeLeft;
+        this.updateDisplay();
+        
+        if (timeLeft <= 0) {
+            this.completeSession();
+        }
     }
     
     skipSession() {
@@ -232,6 +251,8 @@ class KingdomTimer {
             this.state.currentPrayer = '';
         }
         
+        this.state.startTime = null;
+        this.state.endTime = null;
         this.elements.playPauseBtn.textContent = 'Start';
         this.updateDisplay();
     }
@@ -421,6 +442,8 @@ class KingdomTimer {
         this.state.timeLeft = this.settings.workDuration * 60;
         this.state.totalTime = this.state.timeLeft;
         this.state.currentPrayer = '';
+        this.state.startTime = null;
+        this.state.endTime = null;
         this.elements.playPauseBtn.textContent = 'Start';
         this.updateDisplay();
     }
@@ -593,6 +616,65 @@ class KingdomTimer {
         
         const progress = ((this.state.totalTime - this.state.timeLeft) / this.state.totalTime) * 100;
         this.elements.progressFill.style.width = `${progress}%`;
+        
+        this.updateTitle();
+    }
+    
+    updateTitle() {
+        if (this.state.isRunning) {
+            const minutes = Math.floor(this.state.timeLeft / 60);
+            const seconds = this.state.timeLeft % 60;
+            const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            document.title = `${timeString} - KingdomTimer`;
+        } else {
+            document.title = 'KingdomTimer';
+        }
+    }
+    
+    setStaticFavicon() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 32;
+        canvas.height = 32;
+        const ctx = canvas.getContext('2d');
+        
+        // Draw blue background with rounded corners
+        ctx.fillStyle = '#667eea';
+        ctx.beginPath();
+        ctx.roundRect(0, 0, 32, 32, 4);
+        ctx.fill();
+        
+        // Draw white clock circle
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(16, 16, 10, 0, 2 * Math.PI);
+        ctx.stroke();
+        
+        // Draw clock hands pointing to 12 and 3 (like a timer starting)
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        // Hour hand (pointing to 12)
+        ctx.moveTo(16, 16);
+        ctx.lineTo(16, 9);
+        // Minute hand (pointing to 3)
+        ctx.moveTo(16, 16);
+        ctx.lineTo(23, 16);
+        ctx.stroke();
+        
+        // Add center dot
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(16, 16, 1.5, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // Set the favicon
+        let link = document.querySelector("link[rel*='icon']");
+        if (!link) {
+            link = document.createElement('link');
+            link.rel = 'icon';
+            document.head.appendChild(link);
+        }
+        link.href = canvas.toDataURL();
     }
 }
 
